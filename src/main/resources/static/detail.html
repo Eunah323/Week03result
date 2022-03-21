@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>모두의 ${id}번째 일기</title>
+    <script>
+        $(document).ready(function () {
+            eachPage();
+        });
+        function eachPage(id) {
+            $('#diary-box').empty()
+            $.ajax({
+                type: "GET",
+                url: "/api/diaries/{id}",
+                data: {},
+                success: function (response) {
+                    let temphtml= `
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="diary-num">No.${id}</h5>
+                    <p class="mycomment">고유번호 : ${username}</p>
+                    <a href="/api/diaries/${id}">제목 : ${title}</a>
+                    <p class="mycomment">${nickname} 이(가) 씀.</p>
+                    <p class="mycomment">${contents}</p>
+                    <p class="time">${modifiedAt}</p>
+                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
+                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
+                </div>
+            </div>
+        </div>`
+
+                       ;
+
+
+                    }
+                }
+            })
+            console.log('화면 로딩 후 잘 실행되었습니다');
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>
