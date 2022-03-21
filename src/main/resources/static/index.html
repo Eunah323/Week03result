@@ -115,9 +115,9 @@
         function modifying(id) {
             // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
             let username = $(`#${id}-username`).text();
-            let nickname = $(`#${id}-nickname`).text();
-            let title = $(`#${id}-title`).text();
-            let contents = $(`#${id}-contents`).text();
+            let nickname = $(`#${id}-nickname`).val();
+            let title = $(`#${id}-title`).val();
+            let contents = $(`#${id}-contents`).val();
             // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
             // 3. 전달할 data JSON으로 만듭니다.
             let data = {'title':title, 'username': username, 'nickname': nickname, 'contents': contents};
@@ -151,11 +151,11 @@ function addHTML (id, title, nickname, username, contents, modifiedAt){
         <div class="col">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="diary-num">No.${id}</h5>
-                    <p class="mycomment">고유번호 : ${username}</p>
-                    <a href="/api/diaries/${id}">제목 : ${title}</a>
-                    <p class="mycomment">${nickname} 이(가) 씀.</p>
-                    <p class="mycomment" >${contents}</p>
+                    <h5 class="diary-num" id="${id}">No.${id}</h5>
+                    <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
+                    <a href="/api/diaries/${id}" id="${id}-title">제목 : ${title}</a>
+                    <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
+                    <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
                     <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
                     <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>

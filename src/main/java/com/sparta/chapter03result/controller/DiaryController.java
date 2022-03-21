@@ -5,6 +5,7 @@ import com.sparta.chapter03result.domain.DiaryRepository;
 import com.sparta.chapter03result.domain.DiaryRequestDto;
 import com.sparta.chapter03result.service.DiaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class DiaryController {
 
     @GetMapping("/api/diaries")
     public List<Diary> getDiaries() {
-        return diaryRepository.findAll();
+        return diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
 //    @RequestMapping("/api/diaries/{id}")
@@ -50,5 +51,10 @@ public class DiaryController {
 
         // JPA를 이용하여 DB에 저장하고, 그 결과를 반환합니다.
         return diaryRepository.save(diary);
+    }
+    @GetMapping("/api/diaries/{id}")
+    public Diary showdiary(@PathVariable final Long id){
+
+        return diaryRepository.findById(id).get();
     }
 }

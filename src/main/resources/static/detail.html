@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>모두의 ${id}번째 일기</title>
+    <title>모두의 일기 엿보기</title>
     <script>
         $(document).ready(function () {
             eachPage();
@@ -11,36 +11,42 @@
             $('#diary-box').empty()
             $.ajax({
                 type: "GET",
-                url: "/api/diaries/{id}",
+                url: `/api/diaries/${id}`,
                 data: {},
                 success: function (response) {
-                    let temphtml= `
-        <div class="col">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="diary-num">No.${id}</h5>
-                    <p class="mycomment">고유번호 : ${username}</p>
-                    <a href="/api/diaries/${id}">제목 : ${title}</a>
-                    <p class="mycomment">${nickname} 이(가) 씀.</p>
-                    <p class="mycomment">${contents}</p>
-                    <p class="time">${modifiedAt}</p>
-                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
-                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
-                </div>
-            </div>
-        </div>`
-
-                       ;
-
-
+                    let id = response['id'];
+                    let title = response['title'];
+                    let nickname = response['nickname'];
+                    let username = response['username'];
+                    let contents = response['contents'];
+                    let modifiedAt = response['modifiedAt'];
+                    let temphtml= `    <div class="card border-primary mb-3" style="max-width: 20rem;">
+        <div class="card-header">No.${id} ${username}</div>
+        <div class="card-body">
+            <h4 class="card-title">${title} / ${nickname}</h4>
+            <p class="card-text">${contents}</p>
+            <p class="card-date">${modifiedAt}</p>
+        </div>
+    </div>
+        `
+                    $('#diarypage').append(temphtml);
                     }
-                }
             })
-            console.log('화면 로딩 후 잘 실행되었습니다');
+
+            console.log('모두의일기 개별페이지입니다.');
         }
     </script>
 </head>
 <body>
-
+<div id="diarypage">
+    <div class="card border-primary mb-3" style="max-width: 20rem;">
+        <div class="card-header">haha</div>
+        <div class="card-body">
+            <h4 class="card-title">title/nickname</h4>
+            <p class="card-text">contents</p>
+            <p class="card-date">modifiedAt</p>
+        </div>
+    </div>
+</div>
 </body>
 </html>
