@@ -155,7 +155,7 @@ function addHTML (id, title, nickname, username, contents, modifiedAt){
                     <p class="mycomment">고유번호 : ${username}</p>
                     <a href="/api/diaries/${id}">제목 : ${title}</a>
                     <p class="mycomment">${nickname} 이(가) 씀.</p>
-                    <p class="mycomment">${contents}</p>
+                    <p class="mycomment" >${contents}</p>
                     <p class="time">${modifiedAt}</p>
                     <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
                     <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
