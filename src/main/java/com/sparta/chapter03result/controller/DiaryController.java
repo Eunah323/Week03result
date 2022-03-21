@@ -53,8 +53,7 @@ public class DiaryController {
         return diaryRepository.save(diary);
     }
     @GetMapping("/api/diaries/{id}")
-    public Diary showdiary(@PathVariable final Long id){
+    public Diary showdiary(@PathVariable Long id){
 
-        return diaryRepository.findById(id).get();
+        return diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));}
     }
-}
