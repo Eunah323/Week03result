@@ -153,7 +153,7 @@ function addHTML (id, title, nickname, username, contents, modifiedAt){
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
                     <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
-                    <a href="/api/diaries/${id}" id="${id}-title">제목 : ${title}</a>
+                    <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>

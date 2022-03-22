@@ -2,51 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>모두의 일기 엿보기</title>
+    <title>일기 엿보기</title>
     <script>
-        $(document).ready(function () {
-            eachPage(id);
-        });
+        $(document).ready(function(){
+            let getLink = window.location.search;
+            let id = decodeURI(getLink.split('?')[1])
+            eachPage(id)
+        })
+
+
         function eachPage(id) {
-            $('#diary-box').empty()
+            $('#diarypage').empty();
+            console.log(id);
             $.ajax({
                 type: "GET",
                 url: `/api/diaries/${id}`,
-                data: {},
                 success: function (response) {
-                    let id = response['id'];
-                    let title = response['title'];
-                    let nickname = response['nickname'];
-                    let username = response['username'];
-                    let contents = response['contents'];
-                    let modifiedAt = response['modifiedAt'];
-                    let temphtml= `    <div class="card border-primary mb-3" style="max-width: 20rem;">
-        <div class="card-header">No.${id} ${username}<</div>
-        <div class="card-body">
-            <h4 class="card-title">${title} / ${nickname}</h4>
-            <p class="card-text">${contents}</p>
-            <p class="card-date">${modifiedAt}</p>
-        </div>
-    </div>
-        `
-                    $('#diarypage').append(temphtml);
-                    }
+                    let diary = response;
+                    let id = diary.id;
+                    let title = diary.title;
+                    let nickname = diary.nickname;
+                    let username = diary.username;
+                    let contents = diary.contents;
+                    let modifiedAt = diary.modifiedAt;
+
+                    addHTML(id, title, nickname, username, contents, modifiedAt);
+                }
             })
 
             console.log('모두의일기 개별페이지입니다.');
         }
+
+        function addHTML(id, title, nickname, username, contents, modifiedAt) {
+            let temphtml = `     <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="diary-num" id="${id}">No.${id}</h5>
+                    <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
+                    <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}</p>
+                    <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
+                    <p class="mycomment" id="${id}-contents">${contents}</p>
+                    <p class="time">${modifiedAt}</p>
+
+                </div>
+            </div>
+        </div>`;
+            $('#diarypage').append(temphtml);
+        }
+
+
     </script>
 </head>
 <body>
 <div id="diarypage">
-    <div class="card border-primary mb-3" style="max-width: 20rem;">
-        <div class="card-header">No.${id} ${username}</div>
-        <div class="card-body">
-            <h4 class="card-title">${title} / ${nickname}</h4>
-            <p class="card-text">${contents}</p>
-            <p class="card-date">${modifiedAt}</p>
-        </div>
-    </div>
+detail페이지입니다.
 </div>
 </body>
 </html>

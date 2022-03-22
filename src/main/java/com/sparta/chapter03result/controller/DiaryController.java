@@ -6,32 +6,73 @@ import com.sparta.chapter03result.domain.DiaryRequestDto;
 import com.sparta.chapter03result.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController
+@Controller
 public class DiaryController {
 
     private final DiaryRepository diaryRepository;
 
+    @ResponseBody
     @GetMapping("/api/diaries")
     public List<Diary> getDiaries() {
-        return diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-    }
 
-//    @RequestMapping("/api/diaries/{id}")
-//    public Long getDiary(@PathVariable Long id, @RequestBody DiaryRequestDto requestDto) {
-//        return diaryRepository.findById();
+        return diaryRepository.findAll(Sort.by(Sort.Direction.DESC, "modifiedAt"));
+    }
+    @ResponseBody
+    @GetMapping("/api/diaries/{id}")
+    public Diary detailDiary(@PathVariable Long id){
+        return diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
+    }
+//    @GetMapping("/api/diaries/{id}")
+//    public ModelAndView manage(@PathVariable Long id) {
+//            ModelAndView mav = new ModelAndView();
+//            Diary diary = diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
+//            mav.setViewName("detail");
+//            mav.addObject("data", diary);
+//
+//            return mav;
+//        }
+
+
+
+//        mav.addObject("username",username);
+//        mav.addObject("id",id);
+//        mav.addObject("id",id);
+
 //    }
+
+
+
+//    @GetMapping("list")
+//    public ModelAndView getList(
+//            @ModelAttribute(value="pageModel") PageModel pageModel
+//    ){
+//        ModelAndView modelAndView = new ModelAndView("list");
+//        modelAndView.addObject("pageModel", pageModel);
+//        modelAndView.addObject("list", ...);
+//        modelAndView.addObject("count", ...);
+//
+//        return modelAndView;
+
+//    @RequestMapping("/static/detail")
+//    public String showdiary(@PathVariable (name = "id") Long id){
+////        diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
+//        return "/static/detail";
 
     private final DiaryService diaryService;
 
+    @ResponseBody
     @PutMapping("/api/diaries/{id}")
     public Long updateDiary(@PathVariable Long id, @RequestBody DiaryRequestDto requestDto) {
         return diaryService.update(id, requestDto);
     }
+    @ResponseBody
     @DeleteMapping("/api/diaries/{id}")
     public Long deleteDiary(@PathVariable Long id) {
         diaryRepository.deleteById(id);
@@ -39,6 +80,8 @@ public class DiaryController {
     }
 
     // PostMapping을 통해서, 같은 주소라도 방식이 다름을 구분합니다.
+
+    @ResponseBody
     @PostMapping("/api/diaries")
     public Diary createDiary(@RequestBody DiaryRequestDto requestDto) {
         // requestDto 는, 생성 요청을 의미합니다.
@@ -52,8 +95,6 @@ public class DiaryController {
         // JPA를 이용하여 DB에 저장하고, 그 결과를 반환합니다.
         return diaryRepository.save(diary);
     }
-    @GetMapping("/api/diaries/{id}")
-    public Diary showdiary(@PathVariable Long id){
 
-        return diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));}
     }
+
