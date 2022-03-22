@@ -1,40 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://kit.fontawesome.com/be78360a92.js" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
     <meta charset="UTF-8">
     <title>일기 엿보기</title>
     <script>
         $(document).ready(function(){
             let getLink = window.location.search;
             let id = decodeURI(getLink.split('?')[1])
-            eachPage(id)
+            eachPage(id);
         })
+            function eachPage(id) {
+                $('#detailbox').empty();
+                console.log(id);
+                $.ajax({
+                    type: "GET",
+                    url: `/api/diaries/${id}`,
+                    success: function (response) {
+                        let diary = response;
+                        let id = diary.id;
+                        let username = diary.username;
+                        let title = diary.title;
+                        let nickname = diary.nickname;
+                        let contents = diary.contents;
+                        let modifiedAt = diary.modifiedAt;
+                        addHTML(id, username, title, contents, modifiedAt, nickname);
 
+                    }
+                })
+            }
 
-        function eachPage(id) {
-            $('#diarypage').empty();
-            console.log(id);
-            $.ajax({
-                type: "GET",
-                url: `/api/diaries/${id}`,
-                success: function (response) {
-                    let diary = response;
-                    let id = diary.id;
-                    let title = diary.title;
-                    let nickname = diary.nickname;
-                    let username = diary.username;
-                    let contents = diary.contents;
-                    let modifiedAt = diary.modifiedAt;
-
-                    addHTML(id, title, nickname, username, contents, modifiedAt);
-                }
-            })
-
-            console.log('모두의일기 개별페이지입니다.');
-        }
-
-        function addHTML(id, title, nickname, username, contents, modifiedAt) {
-            let temphtml = `     <div class="col">
+            function addHTML(id, username, title, contents, modifiedAt, nickname) {
+                let tempHtml =` <div class="col">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
@@ -43,19 +50,21 @@
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-
+                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
+                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
                 </div>
             </div>
         </div>`;
-            $('#diarypage').append(temphtml);
+                $('#detailbox').append(tempHtml);
         }
+
 
 
     </script>
 </head>
 <body>
-<div id="diarypage">
-detail페이지입니다.
+<div id="detailbox">
+<h1>detail페이지입니다.</h1>
 </div>
 </body>
 </html>

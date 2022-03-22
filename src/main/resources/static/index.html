@@ -145,9 +145,9 @@
             })
 
         }
-function addHTML (id, title, nickname, username, contents, modifiedAt){
+        function addHTML (id, title, nickname, username, contents, modifiedAt){
 
-    let temp_html = `
+            let temp_html = `
         <div class="col">
             <div class="card h-100">
                 <div class="card-body">
@@ -157,13 +157,13 @@ function addHTML (id, title, nickname, username, contents, modifiedAt){
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
-                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
+                    <button onclick="modifying('${id}')"><i class="fa-regular fa-pen-nib">수정</i></button>
+                    <button onclick="deleting('${id}')"><i class="fa-regular fa-trash-can">삭제</i></button>
                 </div>
             </div>
         </div>`
-    $('#diary-box').append(temp_html);
-}
+            $('#diary-box').append(temp_html);
+        }
         function save_diary() {
             let title = $('#title').val();
             let username = genRandomName(10);
