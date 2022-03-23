@@ -153,12 +153,12 @@
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
                     <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
-                    <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}</p>
+                    <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}👈누르세요~!</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-                    <button onclick="modifying('${id}')"><i class="fa-regular fa-pen-nib">수정</i></button>
-                    <button onclick="deleting('${id}')"><i class="fa-regular fa-trash-can">삭제</i></button>
+                    <i class="fa-solid fa-pen-field" onclick="modifying('${id}')">수정</i>
+                    <i class="fa-regular fa-trash-can" onclick="deleting('${id}')">삭제</i>
                 </div>
             </div>
         </div>`
