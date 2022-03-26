@@ -3,12 +3,14 @@ package com.sparta.chapter03result.controller;
 import com.sparta.chapter03result.domain.Diary;
 import com.sparta.chapter03result.domain.DiaryRepository;
 import com.sparta.chapter03result.domain.DiaryRequestDto;
+import com.sparta.chapter03result.security.UserDetailsImpl;
 import com.sparta.chapter03result.service.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -17,6 +19,13 @@ import java.util.List;
 public class DiaryController {
 
     private final DiaryRepository diaryRepository;
+
+    @GetMapping("/")
+        public String home(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            model.addAttribute("nickname", userDetails.getNickname());
+            return "index";
+        }
+
 
     @ResponseBody
     @GetMapping("/api/diaries")
