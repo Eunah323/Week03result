@@ -9,6 +9,7 @@ import com.sparta.chapter03result.model.User;
 import com.sparta.chapter03result.model.UserRoleEnum;
 import com.sparta.chapter03result.repository.UserRepository;
 import com.sparta.chapter03result.security.UserDetailsImpl;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,13 +23,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class UserService {
+
+    // 회원가입 시, 유효성 체크
+    public Map<String, String> validateHandling(BindingResult errors) {
+        Map<String, String> validatorResult = new HashMap<>();
+
+        for (FieldError error : errors.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validatorResult.put(validKeyName, error.getDefaultMessage());
+        }
+        return validatorResult;
+    }
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private static final String ADMIN_TOKEN = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
@@ -67,6 +85,8 @@ public class UserService {
         userRepository.save(user);
     }
 
+
+
     public void kakaoLogin(String code) throws JsonProcessingException {
         String accessToken = getAccessToken(code);
         // 1. "인가 코드"로 "액세스 토큰" 요청
@@ -99,39 +119,37 @@ public class UserService {
         UserDetails userDetails = new UserDetailsImpl(kakaoUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+    }
 
-        private KakaoUserInfoDto getKakaoUserInfo (String accessToken) throws JsonProcessingException {
-            HttpHeaders headers = new HttpHeaders();
+    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
 
-            // HTTP Header 생성
-            headers.add("Authorization", "Bearer " + accessToken);
-            headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        // HTTP Header 생성
+        headers.add("Authorization", "Bearer " + accessToken);
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
 // HTTP 요청 보내기
-            HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
-            RestTemplate rt = new RestTemplate();
-            ResponseEntity<String> response = rt.exchange(
-                    "https://kapi.kakao.com/v2/user/me",
-                    HttpMethod.POST,
-                    kakaoUserInfoRequest,
-                    String.class
-            );
+        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+        RestTemplate rt = new RestTemplate();
+        ResponseEntity<String> response = rt.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.POST,
+                kakaoUserInfoRequest,
+                String.class
+        );
 
-            String responseBody = response.getBody();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
-            Long id = jsonNode.get("id").asLong();
-            String nickname = jsonNode.get("properties")
-                    .get("nickname").asText();
-            String email = jsonNode.get("kakao_account")
-                    .get("email").asText();
+        String responseBody = response.getBody();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(responseBody);
+        Long id = jsonNode.get("id").asLong();
+        String nickname = jsonNode.get("properties")
+                .get("nickname").asText();
+        String email = jsonNode.get("kakao_account")
+                .get("email").asText();
 
-            System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-            return new KakaoUserInfoDto(id, nickname, email);
-        }
-
-
+        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
+        return new KakaoUserInfoDto(id, nickname, email);
+    }
 
 
     private String getAccessToken(String code) throws JsonProcessingException {

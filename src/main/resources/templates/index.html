@@ -155,7 +155,6 @@
                     <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
                     <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}👈누르세요~!</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
-                    <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
                     <i class="fa-solid fa-pen-field" onclick="modifying('${id}')">수정</i>
                     <i class="fa-regular fa-trash-can" onclick="deleting('${id}')">삭제</i>
@@ -198,15 +197,18 @@
 
 <body>
 <div class="mytitle">
-    <a href="/user/login"><button>로그인</button></a>
-    <a href="/user/signup"><button>회원가입</button></a>
     <h1>오늘, 감정, 그리고 일기</h1>
-    <p><span th:text="${nickname}"></span>님 오늘 어떤일이 있었나요?</p>
+    <div>
+        <button onclick="location.href='/user/signup'")>회원가입</button>
+        <button onclick="location.href='/user/login'")>로그인</button>
+    </div>
+    <p><span th:text="${nickname}" id="nowname"></span>님 어서오세요!</p>
     <button onclick="open_box()">✏일기 쓰기</button>
 </div>
 <div class="mypost" id="post-box">
 
     <div class="mb-3">
+        <span th:text="${nickname}"></span>
         <textarea class="form-control" id="title" rows="3" placeholder="일기의 제목은 뭘로 할까요?"></textarea>
         <textarea class="form-control" id="contents" rows="3" placeholder="오늘의 감정을 글로 표현해볼까요?"></textarea>
     </div>

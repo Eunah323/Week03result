@@ -21,4 +21,5 @@ public class DiaryService {
         diary.update(requestDto);
         return diary.getId();
     }
+
 }

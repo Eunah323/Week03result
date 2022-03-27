@@ -30,21 +30,24 @@
 <div id="login-form">
   <div id="login-title">Join in Our Diary!</div>
 
-  <form action="/user/signup" method="post">
+  <form th:action="@{/user/signup}" method="post" modelAttribute="requestDto">
     <div class="login-id-label">Username</div>
-    <input type="text" name="username" placeholder="Username" class="login-input-box">
+    <input type="text" name="username"  placeholder="Username" class="login-input-box">
+    <p><span th:style="${'color: red; font-size:11px;'}" th:text="${valid_username}"></span></p>
 
     <div class="login-id-label">Nickname</div>
     <input type="text" name="nickname" placeholder="Nickname" class="login-input-box">
-
+    <p th:style="${'color: red; font-size:11px;'}" th:text="${valid_nickname}"></p>
     <div class="login-id-label">Password</div>
     <input type="password" name="password" class="login-input-box">
-
+    <p th:style="${'color: red; font-size:11px;'}" th:text="${valid_password}"></p>
     <div class="login-id-label">Password Check</div>
     <input type="password" name="password_check" class="login-input-box">
-
+<!--    <p th:style="${'color: red; font-size:11px;'}" th:text="${valid_rePassword}"></p>-->
     <div class="login-id-label">E-mail</div>
     <input type="text" name="email" placeholder="E-mail" class="login-input-box">
+    <p th:style="${'color: red; font-size:11px;'}" th:text="${valid_email}"></p>
+
 
     <div>
       <input id="admin-check" type="checkbox" name="admin" onclick="onclickAdmin()" style="margin-top: 40px;">관리자

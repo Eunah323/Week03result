@@ -21,12 +21,14 @@ public class DiaryController {
     private final DiaryRepository diaryRepository;
 
     @GetMapping("/")
-        public String home(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-            model.addAttribute("nickname", userDetails.getNickname());
+    public String home(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if(userDetails == null){
             return "index";
         }
+        model.addAttribute("nickname", userDetails.getNickname());
+        return "index";
 
-
+    }
     @ResponseBody
     @GetMapping("/api/diaries")
     public List<Diary> getDiaries() {
@@ -105,5 +107,4 @@ public class DiaryController {
         return diaryRepository.save(diary);
     }
 
-    }
-
+}
