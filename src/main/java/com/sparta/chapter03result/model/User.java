@@ -38,6 +38,8 @@ public class User {
     @Column(unique = true)
     private Long kakaoId;
 
+
+
     public User(String username, String nickname, String password, String email, UserRoleEnum role) {
         this.username = username;
         this.password = password;

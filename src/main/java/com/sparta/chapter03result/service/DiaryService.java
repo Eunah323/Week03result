@@ -1,6 +1,6 @@
 package com.sparta.chapter03result.service;
 
-import com.sparta.chapter03result.domain.Diary;
+import com.sparta.chapter03result.model.Diary;
 import com.sparta.chapter03result.domain.DiaryRepository;
 import com.sparta.chapter03result.domain.DiaryRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +21,4 @@ public class DiaryService {
         diary.update(requestDto);
         return diary.getId();
     }
-
 }

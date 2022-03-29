@@ -1,6 +1,6 @@
 package com.sparta.chapter03result.controller;
 
-import com.sparta.chapter03result.domain.Diary;
+import com.sparta.chapter03result.model.Diary;
 import com.sparta.chapter03result.domain.DiaryRepository;
 import com.sparta.chapter03result.domain.DiaryRequestDto;
 import com.sparta.chapter03result.security.UserDetailsImpl;
@@ -20,12 +20,15 @@ public class DiaryController {
 
     private final DiaryRepository diaryRepository;
 
+
+
     @GetMapping("/")
     public String home(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if(userDetails == null){
             return "index";
         }
         model.addAttribute("nickname", userDetails.getNickname());
+        model.addAttribute("username", userDetails.getUsername());
         return "index";
 
     }
@@ -40,42 +43,6 @@ public class DiaryController {
     public Diary detailDiary(@PathVariable Long id){
         return diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
     }
-//    @GetMapping("/api/diaries/{id}")
-//    public ModelAndView manage(@PathVariable Long id) {
-//            ModelAndView mav = new ModelAndView();
-//            Diary diary = diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
-//            mav.setViewName("detail");
-//            mav.addObject("data", diary);
-//
-//            return mav;
-//        }
-
-
-
-//        mav.addObject("username",username);
-//        mav.addObject("id",id);
-//        mav.addObject("id",id);
-
-//    }
-
-
-
-//    @GetMapping("list")
-//    public ModelAndView getList(
-//            @ModelAttribute(value="pageModel") PageModel pageModel
-//    ){
-//        ModelAndView modelAndView = new ModelAndView("list");
-//        modelAndView.addObject("pageModel", pageModel);
-//        modelAndView.addObject("list", ...);
-//        modelAndView.addObject("count", ...);
-//
-//        return modelAndView;
-
-//    @RequestMapping("/static/detail")
-//    public String showdiary(@PathVariable (name = "id") Long id){
-////        diaryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("null"));
-//        return "/static/detail";
-
     private final DiaryService diaryService;
 
     @ResponseBody
@@ -106,5 +73,6 @@ public class DiaryController {
         // JPA를 이용하여 DB에 저장하고, 그 결과를 반환합니다.
         return diaryRepository.save(diary);
     }
+    }
 
-}
+

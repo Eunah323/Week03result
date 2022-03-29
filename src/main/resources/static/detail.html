@@ -15,33 +15,34 @@
     <meta charset="UTF-8">
     <title>일기 엿보기</title>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             let getLink = window.location.search;
             let id = decodeURI(getLink.split('?')[1])
             eachPage(id);
         })
-            function eachPage(id) {
-                $('#detailbox').empty();
-                console.log(id);
-                $.ajax({
-                    type: "GET",
-                    url: `/api/diaries/${id}`,
-                    success: function (response) {
-                        let diary = response;
-                        let id = diary.id;
-                        let username = diary.username;
-                        let title = diary.title;
-                        let nickname = diary.nickname;
-                        let contents = diary.contents;
-                        let modifiedAt = diary.modifiedAt;
-                        addHTML(id, username, title, contents, modifiedAt, nickname);
 
-                    }
-                })
-            }
+        function eachPage(id) {
+            $('#detailbox').empty();
+            console.log(id);
+            $.ajax({
+                type: "GET",
+                url: `/api/diaries/${id}`,
+                success: function (response) {
+                    let diary = response;
+                    let id = diary.id;
+                    let username = diary.username;
+                    let title = diary.title;
+                    let nickname = diary.nickname;
+                    let contents = diary.contents;
+                    let modifiedAt = diary.modifiedAt;
+                    addHTML(id, username, title, contents, modifiedAt, nickname);
 
-            function addHTML(id, username, title, contents, modifiedAt, nickname) {
-                let tempHtml =` <div class="col">
+                }
+            })
+        }
+
+        function addHTML(id, username, title, contents, modifiedAt, nickname) {
+            let tempHtml = ` <div class="col">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
@@ -50,21 +51,77 @@
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
-                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
+                    <button onclick="modifying('${id}')"><i class="fa-regular fa-pen-nib">수정</i></button>
+                    <button onclick="deleting('${id}')"><i class="fa-regular fa-trash-can">삭제</i></button>
                 </div>
             </div>
         </div>`;
-                $('#detailbox').append(tempHtml);
+            $('#detailbox').append(tempHtml);
         }
 
+        $("#comment-write-btn").click(function () {
+            console.log('댓글 등록 버튼 클릭');
+            const commentWriter = $("#commentWriter").val();
+            const commentContents = $("#commentContents").val();
+            const diaryId = '[[${diary.id}]]';
+            $.ajax({
+                type: 'post',
+                url: '/comment/save',
+                data: {
+                    'commentWriter': commentWriter,
+                    'commentContents': commentContents,
+                    'diaryId': diaryId
+                },
+                data_type: 'json',
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function () {
+                    alert('땡!!!')
+                }
+            });
+        });
 
+        function modifying(id) {
+            // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
+            let username = $(`#${id}-username`).text();
+            let nickname = $(`#${id}-nickname`).val();
+            let title = $(`#${id}-title`).val();
+            let contents = $(`#${id}-contents`).val();
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            // 3. 전달할 data JSON으로 만듭니다.
+            let data = {'title':title, 'username': username, 'nickname': nickname, 'contents': contents};
+            // 4. PUT /api/memos/{id} 에 data를 전달합니다.
+            $.ajax({
+                type: "PUT",
+                url: `/api/diaries/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('일기 변경에 성공하였습니다.');
+                    location.href="/";
+                }
+            });
+            console.log(username,nickname,title,contents);
+        }
+        function deleting(id) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/diaries/${id}`,
+                success: function (response) {
+                    alert('메시지 삭제에 성공하였습니다.');
+                    location.href="/";
+                }
+            })
 
+        }
     </script>
+
 </head>
 <body>
 <div id="detailbox">
-<h1>detail페이지입니다.</h1>
+    <h1>detail페이지입니다.</h1>
 </div>
+
 </body>
 </html>

@@ -1,9 +1,13 @@
-package com.sparta.chapter03result.domain;
+package com.sparta.chapter03result.model;
 
+import com.sparta.chapter03result.domain.DiaryRequestDto;
+import com.sparta.chapter03result.domain.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
@@ -26,6 +30,12 @@ public class Diary extends TimeStamped {
 
     @Column(nullable = false)
     private String contents;
+
+    @OneToMany(mappedBy = "diary", fetch = FetchType.LAZY)
+    private List<Comment> commentEntityList = new ArrayList<>();
+
+
+
 
     public Diary(String username, String nickname, String title, String contents) {
         this.username = username;

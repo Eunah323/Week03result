@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
     <script src="https://kit.fontawesome.com/be78360a92.js" crossorigin="anonymous"></script>
@@ -112,39 +113,7 @@
             })
             console.log('화면 로딩 후 잘 실행되었습니다');
         }
-        function modifying(id) {
-            // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
-            let username = $(`#${id}-username`).text();
-            let nickname = $(`#${id}-nickname`).val();
-            let title = $(`#${id}-title`).val();
-            let contents = $(`#${id}-contents`).val();
-            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
-            // 3. 전달할 data JSON으로 만듭니다.
-            let data = {'title':title, 'username': username, 'nickname': nickname, 'contents': contents};
-            // 4. PUT /api/memos/{id} 에 data를 전달합니다.
-            $.ajax({
-                type: "PUT",
-                url: `/api/diaries/${id}`,
-                contentType: "application/json",
-                data: JSON.stringify(data),
-                success: function (response) {
-                    alert('일기 변경에 성공하였습니다.');
-                    window.location.reload();
-                }
-            });
-            console.log(username,nickname,title,contents);
-        }
-        function deleting(id) {
-            $.ajax({
-                type: "DELETE",
-                url: `/api/diaries/${id}`,
-                success: function (response) {
-                    alert('메시지 삭제에 성공하였습니다.');
-                    window.location.reload();
-                }
-            })
 
-        }
         function addHTML (id, title, nickname, username, contents, modifiedAt){
 
             let temp_html = `
@@ -155,9 +124,10 @@
                     <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
                     <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}👈누르세요~!</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
+                    <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-                    <i class="fa-solid fa-pen-field" onclick="modifying('${id}')">수정</i>
-                    <i class="fa-regular fa-trash-can" onclick="deleting('${id}')">삭제</i>
+                    // <i class="fa-solid fa-pen-field" onclick="modifying('${id}')">수정</i>
+                    // <i class="fa-regular fa-trash-can" onclick="deleting('${id}')">삭제</i>
                 </div>
             </div>
         </div>`
@@ -198,17 +168,15 @@
 <body>
 <div class="mytitle">
     <h1>오늘, 감정, 그리고 일기</h1>
-    <div>
-        <button onclick="location.href='/user/signup'")>회원가입</button>
-        <button onclick="location.href='/user/login'")>로그인</button>
-    </div>
+    <div ><button onclick="location.href='/user/signup'">회원가입</button>
+        <button onclick="location.href='/user/login'" >로그인</button></div>
     <p><span th:text="${nickname}" id="nowname"></span>님 어서오세요!</p>
-    <button onclick="open_box()">✏일기 쓰기</button>
+    <button onclick="open_box()" >✏일기 쓰기</button>
 </div>
 <div class="mypost" id="post-box">
 
     <div class="mb-3">
-        <span th:text="${nickname}"></span>
+        <textarea class="form-control" id="nickname" rows="3" placeholder="당신의 이름은?"></textarea>
         <textarea class="form-control" id="title" rows="3" placeholder="일기의 제목은 뭘로 할까요?"></textarea>
         <textarea class="form-control" id="contents" rows="3" placeholder="오늘의 감정을 글로 표현해볼까요?"></textarea>
     </div>
