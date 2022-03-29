@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
@@ -31,8 +29,8 @@ public class Diary extends TimeStamped {
     @Column(nullable = false)
     private String contents;
 
-    @OneToMany(mappedBy = "diary", fetch = FetchType.LAZY)
-    private List<Comment> commentEntityList = new ArrayList<>();
+//    @OneToMany(mappedBy = "diary", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+//    private List<Comment> commentList;
 
 
 
