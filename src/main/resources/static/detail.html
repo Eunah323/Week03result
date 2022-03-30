@@ -1,5 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
     <script src="https://kit.fontawesome.com/be78360a92.js" crossorigin="anonymous"></script>
     <meta charset="utf-8">
@@ -12,14 +14,16 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 
-    <meta charset="UTF-8">
     <title>일기 엿보기</title>
     <script>
         $(document).ready(function () {
             let getLink = window.location.search;
             let id = decodeURI(getLink.split('?')[1])
             eachPage(id);
+            getComments(id);
+
         })
+
 
         function eachPage(id) {
             $('#detailbox').empty();
@@ -93,51 +97,75 @@
 
         }
 
+        // function writeComment() {
+        //     let user =
+        //     if(user == null){
+        //         alert('로그인이 필요합니다.')
+        //         window.location.replace('/')
+        //         return;
+        //     }
+        //     let contents = $('#exampleFormControlTextarea1').val();
+        //     let diaryId = [[${data.id}]]
+        //     // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+        //     if (!isPostEmpty(contents, diaryId)) {
+        //         // alert 창 띄우기
+        //         alert("필수 값 입력 오류!!")
+        //         return;
+        //     }
+        //     // 4. 전달할 data JSON으로 만듭니다.
+        //     let data = {'contents': contents, 'diaryId': diaryId};
+        //     // 5. POST /api/memos 에 data를 전달합니다.
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/api/comments",
+        //         contentType: "application/json", // JSON 형식으로 전달함을 알리기
+        //         data: JSON.stringify(data),
+        //         success: function () {
+        //             alert('댓글 작성 완료!!.');
+        //             window.location.reload();
+        //         }
+        //     });
+        // }
         function writeComment() {
-            let user = [[${username}]]
-            if(user == null){
-                alert('로그인이 필요합니다.')
-                window.location.replace('/')
-                return;
-            }
             let contents = $('#exampleFormControlTextarea1').val();
-            let diaryId = [[${data.id}]]
-            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
-            if (!isPostEmpty(contents, diaryId)) {
-                // alert 창 띄우기
-                alert("필수 값 입력 오류!!")
-                return;
-            }
-            // 4. 전달할 data JSON으로 만듭니다.
-            let data = {'contents': contents, 'diaryId': diaryId};
-            // 5. POST /api/memos 에 data를 전달합니다.
+            // let diaryId = `id`;
+        //     // let nickname = $('#nickname').val();
+        //     // if (!isPostEmpty(contents, diaryId)) {
+        //     //     // alert 창 띄우기
+        //     //     alert("필수 값 입력 오류!!")
+        //     //     return;}
+            let data = {'contents': contents};
+
             $.ajax({
-                type: "POST",
-                url: "/api/comments",
-                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                type: 'POST',
+                url: `/api/diaries/{id}/comments`,
+                contentType: "application/json",
                 data: JSON.stringify(data),
-                success: function () {
-                    alert('댓글 작성 완료!!.');
+                success: function (response) {
+                    alert('댓글 작성 완료!!');
                     window.location.reload();
+
                 }
             });
         }
+
         function getComments() {
             $('#collapse-1').empty();
-            let user = [[${user}]]
-            let commentList = [[${commentList}]]
-            for(let i = 0; i < commentList.length; i++) {
-                let contents = commentList[i].contents
-                let nickname = commentList[i].nickname
-                let modifiedAt = commentList[i].modifiedAt
-                let commentId = commentList[i].commentId
-                let tempHtml = ``
-                if(user === nickname) {
-                    tempHtml = `<div class="commented-section mt-2">
+            $.ajax({
+                type: "GET",
+                url: `/api/diaries/{id}/comments`,
+                data: {},
+                success: function (commentList) {
+                    for (let i = 0; i < commentList.length; i++) {
+                        let contents = commentList[i].contents
+                        let nickname = commentList[i].nickname
+                        let modifiedAt = commentList[i].modifiedAt
+                        let commentId = commentList[i].commentId
+                        let tempHtml = ``
+                        if (nickname != null) {
+                            tempHtml = `<div class="commented-section mt-2">
                                     <div class="d-flex flex-row align-items-center commented-user">
                                         <h5 class="mr-2">${nickname}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2" style="margin-left: 15px">${modifiedAt}</span>
-                                        <button type="button" onclick="deleteComment(${commentId})" style="margin-left: 100px" class="btn-light btn-sm">X</button>
-                                        <button type="button" data-toggle="modal" data-target="#modal"  style="margin-left: 20px" class="btn-light btn-sm">Edit</button>
                                          <div class="modal fade bd-example-modal-lg" id="modal"  role="document" >
                                             <div class="modal-dialog modal-lg" role="document">
                                                 <div class="modal-content">
@@ -159,16 +187,18 @@
                                     </div>
                                     <div class="comment-text-sm"><span>${contents}</span></div>
                                 </div>`
-                } else {
-                    tempHtml = `<div class="commented-section mt-2">
+                        } else {
+                            tempHtml = `<div class="commented-section mt-2">
                                     <div class="d-flex flex-row align-items-center commented-user">
                                         <h5 class="mr-2">${nickname}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2" style="margin-left: 15px">${modifiedAt}</span>
                                     </div>
                                     <div class="comment-text-sm"><span>${contents}</span></div>
                                 </div>`
+                        }
+                        $('#collapse-1').append(tempHtml);
+                    }
                 }
-                $('#collapse-1').append(tempHtml);
-            }
+            })
         }
     </script>
 
@@ -181,9 +211,10 @@
 
 </div>
 <div class="d-flex flex-row add-comment-section mt-4 mb-4">
-    <input type="text" id="exampleFormControlTextarea1" class="form-control mr-3" placeholder="댓글을 남겨보세용">
-    <button class="btn btn-secondary" onclick="writeComment()" type="button">Comment</button>
-</div>
 
+    <input type="text" id="exampleFormControlTextarea1" name="contents" class="form-control mr-3" placeholder="댓글을 남겨보세용">
+    <button class="btn btn-secondary"  type="button" onclick="writeComment()">Comment</button>
+</div>
+</form>
 </body>
 </html>

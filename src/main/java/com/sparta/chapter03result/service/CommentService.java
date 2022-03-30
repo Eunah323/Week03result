@@ -6,20 +6,20 @@ import com.sparta.chapter03result.repository.CommentRepository;
 import com.sparta.chapter03result.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
-
-    @Transactional
-    public Long update(Long id, CommentRequestDto requestDto) {
-        Comment comment = commentRepository.findById(id).orElseThrow(
-                () -> new NullPointerException("해당 아이디가 존재하지 않습니다.")
+//
+//    @Transactional
+    public Long update(Long commentId, CommentRequestDto requestDto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new NullPointerException("해당 댓글은 존재하지 않습니다.")
         );
-        return comment.update(requestDto);
+        comment.update(requestDto);
+        return comment.getCommentId();
     }
 
     public Long deleteComment(Long id) {
@@ -27,8 +27,9 @@ public class CommentService {
         return id;
     }
 
+    //댓글쓰기
     public Comment createComment(CommentRequestDto requestDto, UserDetailsImpl userDetails) {
-        Comment comment = new Comment(requestDto, userDetails.getUser().getNickname());
+        Comment comment = new Comment(requestDto, userDetails.getUser());
         return commentRepository.save(comment);
     }
 }
