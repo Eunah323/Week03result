@@ -1,6 +1,5 @@
 package com.sparta.chapter03result.domain;
 
-import com.sparta.chapter03result.model.Diary;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class CommentRequestDto {
 
     private String contents;
-    private Diary diaryId;
+    private Long diaryId;
 }

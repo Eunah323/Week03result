@@ -1,7 +1,9 @@
 package com.sparta.chapter03result.service;
 
 import com.sparta.chapter03result.domain.CommentRequestDto;
+import com.sparta.chapter03result.domain.DiaryRepository;
 import com.sparta.chapter03result.model.Comment;
+import com.sparta.chapter03result.model.Diary;
 import com.sparta.chapter03result.repository.CommentRepository;
 import com.sparta.chapter03result.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final DiaryRepository diaryRepository;
 //
 //    @Transactional
     public Long update(Long commentId, CommentRequestDto requestDto) {
@@ -29,7 +32,8 @@ public class CommentService {
 
     //댓글쓰기
     public Comment createComment(CommentRequestDto requestDto, UserDetailsImpl userDetails) {
-        Comment comment = new Comment(requestDto, userDetails.getUser());
+        Diary diary = null;
+        Comment comment = new Comment(requestDto.getContents(), userDetails.getUser(),diary);
         return commentRepository.save(comment);
     }
 }

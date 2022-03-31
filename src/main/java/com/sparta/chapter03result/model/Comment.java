@@ -21,13 +21,12 @@ public class Comment extends Timestamped {
     private String contents;
 
     @ManyToOne
-    @JoinColumn(name = "USER_NICKNAME")
+    @JoinColumn(name = "nickname")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "DIARY_ID")
+    @JoinColumn(name = "diaryId")
     private Diary diary;
-
 
     public Comment(String contents, User user, Diary diary) {
         this.contents = contents;

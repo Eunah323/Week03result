@@ -76,7 +76,17 @@
         $(document).ready(function () {
             listing();
         });
-
+        function isValidContents(contents) {
+            if (contents == '') {
+                alert('내용을 입력해주세요');
+                return false;
+            }
+            if (contents.trim().length > 140) {
+                alert('공백 포함 140자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
         //랜덤의 유저네임 만들기
         function genRandomName(length) {
             let result = '';
@@ -121,13 +131,11 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
-                    <p class="mycomment" ${id}-username>고유번호 : ${username}</p>
+                    <p class="mycomment" id="${id}-username">고유번호 : ${username}</p>
                     <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}👈누르세요~!</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
                     <p class="time">${modifiedAt}</p>
-                    // <i class="fa-solid fa-pen-field" onclick="modifying('${id}')">수정</i>
-                    // <i class="fa-regular fa-trash-can" onclick="deleting('${id}')">삭제</i>
                 </div>
             </div>
         </div>`
@@ -135,8 +143,12 @@
         }
         function save_diary() {
             let title = $('#title').val();
+
             let username = genRandomName(10);
             let contents = $('#contents').val();
+            if (isValidContents(contents) == false) {
+                return;
+            }
             let nickname = $('#nickname').val();
             let data = {'title':title, 'username': username, 'nickname': nickname, 'contents': contents};
 
