@@ -1,5 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+
 <head>
     <script src="https://kit.fontawesome.com/be78360a92.js" crossorigin="anonymous"></script>
     <meta charset="utf-8">
@@ -12,36 +14,75 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 
-    <meta charset="UTF-8">
     <title>일기 엿보기</title>
     <script>
-        $(document).ready(function(){
+        $(document).ready(function () {
             let getLink = window.location.search;
             let id = decodeURI(getLink.split('?')[1])
             eachPage(id);
+            getComments(id);
         })
-            function eachPage(id) {
-                $('#detailbox').empty();
-                console.log(id);
-                $.ajax({
-                    type: "GET",
-                    url: `/api/diaries/${id}`,
-                    success: function (response) {
-                        let diary = response;
-                        let id = diary.id;
-                        let username = diary.username;
-                        let title = diary.title;
-                        let nickname = diary.nickname;
-                        let contents = diary.contents;
-                        let modifiedAt = diary.modifiedAt;
-                        addHTML(id, username, title, contents, modifiedAt, nickname);
-
-                    }
-                })
+        function isValidContents(contents) {
+            if (contents == '') {
+                alert('내용을 입력해주세요');
+                return false;
             }
+            if (contents.trim().length > 140) {
+                alert('공백 포함 140자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+        // 수정 버튼을 눌렀을 때, 기존 작성 내용을 textarea 에 전달합니다.
+        // 숨길 버튼을 숨기고, 나타낼 버튼을 나타냅니다.
+        function editPost(id) {
+            showEdits(id);
+            let contents = $(`#${id}-contents`).text().trim();
+            $(`#${id}-textarea`).val(contents);
+        }
 
-            function addHTML(id, username, title, contents, modifiedAt, nickname) {
-                let tempHtml =` <div class="col">
+        function showEdits(id) {
+            $(`#${id}-editarea`).show();
+            $(`#${id}-submit`).show();
+            $(`#${id}-delete`).show();
+
+            $(`#${id}-contents`).hide();
+            $(`#${id}-edit`).hide();
+        }
+        function hideEdits(id) {
+            $(`#${id}-editarea`).hide();
+            $(`#${id}-submit`).hide();
+            $(`#${id}-delete`).hide();
+
+            $(`#${id}-contents`).show();
+            $(`#${id}-edit`).show();
+        }
+
+
+
+
+        function eachPage(id) {
+            $('#detailbox').empty();
+            console.log(id);
+            $.ajax({
+                type: "GET",
+                url: `/api/diaries/${id}`,
+                success: function (response) {
+                    let diary = response;
+                    let id = diary.id;
+                    let username = diary.username;
+                    let title = diary.title;
+                    let nickname = diary.nickname;
+                    let contents = diary.contents;
+                    let modifiedAt = diary.modifiedAt;
+                    addHTML(id, username, title, contents, modifiedAt, nickname);
+
+                }
+            })
+        }
+
+        function addHTML(id, username, title, contents, modifiedAt, nickname) {
+            let tempHtml = ` <div class="col">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="diary-num" id="${id}">No.${id}</h5>
@@ -49,22 +90,175 @@
                     <p onclick="location.href='/detail.html?${id}'" id="${id}-title">제목 : ${title}</p>
                     <p class="mycomment" id="${id}-nickname">${nickname} 이(가) 씀.</p>
                     <p class="mycomment" id="${id}-contents">${contents}</p>
+                      <div id="${id}-editarea" class="edit">
+                        <textarea id="${id}-textarea" class="te-edit" name=""  cols="30" rows="5"></textarea>
+                    </div>
                     <p class="time">${modifiedAt}</p>
-                    <button onclick="modifying()"><i class="fa-regular fa-pen-nib">수정</i></button>
-                    <button onclick="deleting()"><i class="fa-regular fa-trash-can">삭제</i></button>
+                    <button id="${id}-edit" onclick="editPost('${id}')"><i class="fa-regular fa-pen-nib">수정</i></button>
+                    <button id="${id}-delete" onclick="deleting('${id}')"><i class="fa-regular fa-trash-can">삭제</i></button>
+                    <button id="${id}-submit" onclick="modifying('${id}')"><i class="fa-regular fa-trash-can">등록</i></button>
                 </div>
             </div>
         </div>`;
-                $('#detailbox').append(tempHtml);
+            $('#detailbox').append(tempHtml);
         }
 
+        function modifying(id) {
+            hideEdits(id)
+            // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
+            let username = $(`#${id}-username`).text().trim();
+            let contents = $(`#${id}-textarea`).val().trim();
 
+            if (isValidContents(contents) == false) {
+                return;
+            }
+            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            // 3. 전달할 data JSON으로 만듭니다.
+            let data = {'username': username, 'contents': contents};
+            // 4. PUT /api/memos/{id} 에 data를 전달합니다.
+            $.ajax({
+                type: "PUT",
+                url: `/api/diaries/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('일기 수정완료!');
+                    window.location.reload();
+                }
+            });
+            console.log(username,nickname, contents);
+        }
+        function deleting(id) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/diaries/${id}`,
+                success: function (response) {
+                    alert('메시지 삭제에 성공하였습니다.');
+                    location.href="/";
+                }
+            })
 
+        }
+
+        // function writeComment() {
+        //     let user =
+        //     if(user == null){
+        //         alert('로그인이 필요합니다.')
+        //         window.location.replace('/')
+        //         return;
+        //     }
+        //     let contents = $('#exampleFormControlTextarea1').val();
+        //     let diaryId = [[${data.id}]]
+        //     // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+        //     if (!isPostEmpty(contents, diaryId)) {
+        //         // alert 창 띄우기
+        //         alert("필수 값 입력 오류!!")
+        //         return;
+        //     }
+        //     // 4. 전달할 data JSON으로 만듭니다.
+        //     let data = {'contents': contents, 'diaryId': diaryId};
+        //     // 5. POST /api/memos 에 data를 전달합니다.
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/api/comments",
+        //         contentType: "application/json", // JSON 형식으로 전달함을 알리기
+        //         data: JSON.stringify(data),
+        //         success: function () {
+        //             alert('댓글 작성 완료!!.');
+        //             window.location.reload();
+        //         }
+        //     });
+        // }
+        function writeComment() {
+            let contents = $('#exampleFormControlTextarea1').val();
+            // let diaryId = `id`;
+        //     // let nickname = $('#nickname').val();
+        //     // if (!isPostEmpty(contents, diaryId)) {
+        //     //     // alert 창 띄우기
+        //     //     alert("필수 값 입력 오류!!")
+        //     //     return;}
+            let data = {'contents': contents};
+
+            $.ajax({
+                type: 'POST',
+                url: `/api/diaries/{id}/comments`,
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('댓글 작성 완료!!');
+                    window.location.reload();
+
+                }
+            });
+        }
+
+        function getComments() {
+            $('#collapse-1').empty();
+            $.ajax({
+                type: "GET",
+                url: `/api/diaries/{id}/comments`,
+                data: {},
+                success: function (commentList) {
+                    for (let i = 0; i < commentList.length; i++) {
+                        let contents = commentList[i].contents
+                        let nickname = commentList[i].NICKNAME
+                        let modifiedAt = commentList[i].modifiedAt
+                        let commentId = commentList[i].comment_Id
+                        let tempHtml = ``
+                        if (nickname != null) {
+                            tempHtml = `
+<div class="commented-section mt-2">
+                                    <div class="d-flex flex-row align-items-center commented-user">
+                                        <h5 class="mr-2">${nickname}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2" style="margin-left: 15px">${modifiedAt}</span>
+                                         <div class="modal fade bd-example-modal-lg" id="modal"  role="document" >
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel" >New Comment</h5>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <textarea class="form-control" id="edittedContents" rows="8">${contents}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="button" class="btn btn-primary" onclick="editComment(${commentId})">edit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-text-sm"><span>${contents}</span></div>
+                                </div>`
+                        } else {
+                            tempHtml = `<div class="commented-section mt-2">
+                                    <div class="d-flex flex-row align-items-center commented-user">
+                                        <h5 class="mr-2">${nickname}</h5><span class="dot mb-1"></span><span class="mb-1 ml-2" style="margin-left: 15px">${modifiedAt}</span>
+                                    </div>
+                                    <div class="comment-text-sm"><span>${contents}</span></div>
+                                </div>`
+                        }
+                        $('#collapse-1').append(tempHtml);
+                    }
+                }
+            })
+        }
     </script>
+
 </head>
 <body>
 <div id="detailbox">
-<h1>detail페이지입니다.</h1>
+    <h1>detail페이지입니다.</h1>
 </div>
+<div id="collapse-1">
+
+</div>
+<div class="d-flex flex-row add-comment-section mt-4 mb-4">
+
+    <input type="text" id="exampleFormControlTextarea1" name="contents" class="form-control mr-3" placeholder="댓글을 남겨보세용">
+    <button class="btn btn-secondary"  type="button" onclick="writeComment()">Comment</button>
+</div>
+</form>
 </body>
 </html>

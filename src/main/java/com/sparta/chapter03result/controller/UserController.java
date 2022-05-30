@@ -28,6 +28,7 @@ public class UserController {
     // 회원 로그인 페이지
     @GetMapping("/user/login")
     public String login() {
+
         return "login";
     }
 
@@ -40,7 +41,7 @@ public class UserController {
     // 회원 가입 요청 처리
     @PostMapping("/user/signup")
     public String registerUser(@ModelAttribute @Valid SignupRequestDto requestDto, BindingResult errors, Model model) {
-        userService.registerUser(requestDto);
+
         if (errors.hasErrors()) {
             // 회원가입 실패시, 입력 데이터를 유지
             model.addAttribute("requestDto", requestDto);
@@ -53,6 +54,7 @@ public class UserController {
 
             return "signup";
         }
+        userService.registerUser(requestDto);
         return "redirect:/user/login";
     }
 

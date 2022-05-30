@@ -1,18 +1,23 @@
-package com.sparta.chapter03result.domain;
+package com.sparta.chapter03result.model;
 
+import com.sparta.chapter03result.domain.DiaryRequestDto;
+import com.sparta.chapter03result.domain.TimeStamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor // 기본생성자를 만듭니다.
 @Getter
+@Setter
 @Entity // 테이블과 연계됨을 스프링에게 알려줍니다.
 public class Diary extends TimeStamped {
     // 생성,수정 시간을 자동으로 만들어줍니다.
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -26,6 +31,12 @@ public class Diary extends TimeStamped {
 
     @Column(nullable = false)
     private String contents;
+
+    @OneToMany(mappedBy = "diary", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    private List<Comment> commentList;
+
+
+
 
     public Diary(String username, String nickname, String title, String contents) {
         this.username = username;
@@ -42,8 +53,6 @@ public class Diary extends TimeStamped {
     }
     public void update(DiaryRequestDto requestDto) {
         this.username = requestDto.getUsername();
-        this.nickname = requestDto.getNickname();
-        this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
     }
 

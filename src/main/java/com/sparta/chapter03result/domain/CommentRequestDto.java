@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DiaryRequestDto {
-    private String title;
-    private String username;
-    private String nickname;
+public class CommentRequestDto {
+
     private String contents;
+    private Long diaryId;
 }

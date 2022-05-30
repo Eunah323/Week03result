@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -37,6 +38,7 @@ import java.util.UUID;
 public class UserService {
 
     // 회원가입 시, 유효성 체크
+    @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult errors) {
         Map<String, String> validatorResult = new HashMap<>();
 
@@ -161,7 +163,7 @@ public class UserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "0aecdba9e77dedf60ad0601a2d95cd97");
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("redirect_uri", "http://3.39.23.124/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
